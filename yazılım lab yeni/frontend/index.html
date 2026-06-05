@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Restoran Stok Yönetimi</title>
+  <link href="lib/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="lib/bootstrap-icons/bootstrap-icons.min.css" rel="stylesheet" />
+  <link href="css/style.css" rel="stylesheet" />
+</head>
+<body>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       LOGIN EKRANI
+  ═══════════════════════════════════════════════════════════ -->
+  <div id="loginScreen" class="login-screen">
+    <div class="login-card">
+      <h2 class="login-title">Restoran Stok Yönetimi</h2>
+      <p class="login-subtitle">Devam etmek için rolünüzü seçin</p>
+      <div id="loginError" class="alert alert-danger d-none py-2 small"></div>
+      <div class="mb-3">
+        <label class="login-label">ROL SEÇİMİ</label>
+        <select id="roleSelect" class="form-select login-select">
+          <option value="">Rol seçiniz</option>
+          <option value="Admin">Admin</option>
+          <option value="DepoSorumlusu">Depo Sorumlusu</option>
+          <option value="SatinAlmaSorumlusu">Satın Alma Sorumlusu</option>
+          <option value="Yonetici">Yönetici</option>
+        </select>
+      </div>
+      <button id="loginBtn" class="btn btn-primary w-100 login-btn">Giriş Yap</button>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       ANA UYGULAMA
+  ═══════════════════════════════════════════════════════════ -->
+  <div id="appScreen" class="d-none app-wrapper">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <span class="brand-title">Restoran Stok</span>
+        <span class="brand-sub">YÖNETİM SİSTEMİ</span>
+      </div>
+
+      <nav class="sidebar-nav">
+        <a href="#" class="nav-item active" data-page="dashboard">
+          <i class="bi bi-grid-1x2"></i> Dashboard
+        </a>
+        <a href="#" class="nav-item" data-page="stok">
+          <i class="bi bi-arrow-repeat"></i> Stok Yönetimi
+        </a>
+        <a href="#" class="nav-item" data-page="talepler" id="navTalepler">
+          <i class="bi bi-file-text"></i> Satın Alma Talepleri
+        </a>
+        <a href="#" class="nav-item" data-page="siparisler" id="navSiparisler">
+          <i class="bi bi-cart3"></i> Siparişler
+        </a>
+        <a href="#" class="nav-item" data-page="tedarikciler" id="navTedarikciler">
+          <i class="bi bi-people"></i> Tedarikçiler
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="user-info">
+          <div class="user-avatar"><i class="bi bi-person-fill"></i></div>
+          <div>
+            <div class="user-name" id="sidebarUserName">Ahmet Yılmaz</div>
+            <div class="user-role" id="sidebarUserRole">Admin</div>
+          </div>
+        </div>
+        <div class="role-switcher">
+          <label class="role-switch-label">ROL DEĞİŞTİR</label>
+          <select id="roleSwitcher" class="form-select form-select-sm role-select">
+            <option value="Admin">Admin</option>
+            <option value="DepoSorumlusu">Depo Sorumlusu</option>
+            <option value="SatinAlmaSorumlusu">Satın Alma Sorumlusu</option>
+            <option value="Yonetici">Yönetici</option>
+          </select>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+
+      <!-- ── DASHBOARD ── -->
+      <section id="pageDashboard" class="page-section">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">Sistem Yönetimi</h1>
+            <p class="page-sub" id="dashWelcome">Hoş geldiniz, Ahmet Yılmaz</p>
+          </div>
+        </div>
+
+        <div class="row g-3 mb-4">
+          <div class="col-md-3">
+            <div class="stat-card">
+              <div class="stat-label">KRİTİK STOK</div>
+              <div class="stat-value text-danger" id="statKritik">0</div>
+              <div class="stat-desc text-danger">Acil müdahale gerekli</div>
+              <i class="bi bi-exclamation-triangle stat-icon text-danger"></i>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="stat-card">
+              <div class="stat-label">TOPLAM ÜRÜN</div>
+              <div class="stat-value text-primary" id="statUrun">0</div>
+              <div class="stat-desc">Stokta bulunan ürün</div>
+              <i class="bi bi-globe stat-icon text-primary"></i>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="stat-card">
+              <div class="stat-label">BEKLEYEN TALEPLER</div>
+              <div class="stat-value text-warning" id="statTalep">0</div>
+              <div class="stat-desc">Onay bekliyor</div>
+              <i class="bi bi-file-earmark-text stat-icon text-warning"></i>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="stat-card">
+              <div class="stat-label">AKTİF SİPARİŞLER</div>
+              <div class="stat-value text-success" id="statSiparis">0</div>
+              <div class="stat-desc">Teslim bekliyor</div>
+              <i class="bi bi-cart3 stat-icon text-success"></i>
+            </div>
+          </div>
+        </div>
+
+        <div class="alert-box" id="dashCriticalBox">
+          <div class="alert-box-header">
+            <i class="bi bi-exclamation-triangle-fill text-danger me-2"></i>
+            <strong>Kritik Stok Uyarısı</strong>
+          </div>
+          <p class="alert-box-sub">Aşağıdaki ürünler minimum stok seviyesinin altında:</p>
+          <div id="dashCriticalList"></div>
+        </div>
+      </section>
+
+      <!-- ── STOK YÖNETİMİ ── -->
+      <section id="pageStok" class="page-section d-none">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">Stok Yönetimi</h1>
+            <p class="page-sub" id="stokSubtitle">0 ürün</p>
+          </div>
+          <div class="d-flex gap-2">
+            <button class="btn btn-outline-secondary btn-sm" onclick="exportPDF()">
+              <i class="bi bi-download me-1"></i>PDF İndir
+            </button>
+            <button class="btn btn-primary btn-sm" id="btnYeniUrun" onclick="openYeniUrunModal()">
+              <i class="bi bi-plus me-1"></i>Yeni Ürün
+            </button>
+          </div>
+        </div>
+
+        <div class="alert-box mb-3" id="stokCriticalBox">
+          <div class="alert-box-header">
+            <i class="bi bi-exclamation-triangle-fill text-danger me-2"></i>
+            <strong>Kritik Stok Uyarısı</strong>
+          </div>
+          <p class="alert-box-sub mb-0" id="stokCriticalMsg"></p>
+        </div>
+
+        <div class="table-card">
+          <table class="table table-hover mb-0">
+            <thead>
+              <tr>
+                <th>Ürün Adı</th>
+                <th>Kategori</th>
+                <th>Mevcut Miktar</th>
+                <th>Min. Eşik</th>
+                <th>Durum</th>
+                <th class="cost-col">Birim Fiyat</th>
+                <th class="text-end">İşlemler</th>
+              </tr>
+            </thead>
+            <tbody id="stokTableBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ── SATIN ALMA TALEPLERİ ── -->
+      <section id="pageTalepler" class="page-section d-none">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">Satın Alma Talepleri</h1>
+            <p class="page-sub" id="talepSubtitle">0 talep</p>
+          </div>
+          <button class="btn btn-primary btn-sm" id="btnYeniTalep" onclick="openModal('modalYeniTalep')">
+            <i class="bi bi-plus me-1"></i>Yeni Talep
+          </button>
+        </div>
+
+        <div class="table-card">
+          <table class="table table-hover mb-0">
+            <thead>
+              <tr>
+                <th>Ürün</th>
+                <th>Miktar</th>
+                <th>Oluşturan</th>
+                <th>Neden</th>
+                <th>Durum</th>
+                <th>Onaylayan</th>
+                <th class="text-end">İşlemler</th>
+              </tr>
+            </thead>
+            <tbody id="talepTableBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ── SİPARİŞLER ── -->
+      <section id="pageSiparisler" class="page-section d-none">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">Sipariş Yönetimi</h1>
+            <p class="page-sub" id="siparisSubtitle">0 sipariş</p>
+          </div>
+          <button class="btn btn-primary btn-sm" id="btnYeniSiparis" onclick="openModal('modalYeniSiparis')">
+            <i class="bi bi-plus me-1"></i>Yeni Sipariş
+          </button>
+        </div>
+
+        <div class="table-card">
+          <table class="table table-hover mb-0">
+            <thead>
+              <tr>
+                <th>Ürün</th>
+                <th>Miktar</th>
+                <th>Tedarikçi</th>
+                <th>Oluşturan</th>
+                <th>Durum</th>
+                <th>Teslim Alan</th>
+                <th class="text-end">İşlemler</th>
+              </tr>
+            </thead>
+            <tbody id="siparisTableBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ── TEDARİKÇİLER ── -->
+      <section id="pageTedarikciler" class="page-section d-none">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">Tedarikçiler</h1>
+            <p class="page-sub" id="tedarikciSubtitle">0 tedarikçi</p>
+          </div>
+          <button class="btn btn-primary btn-sm" id="btnYeniTedarikci" onclick="openModal('modalYeniTedarikci')">
+            <i class="bi bi-plus me-1"></i>Yeni Tedarikçi
+          </button>
+        </div>
+        <div class="table-card">
+          <table class="table table-hover mb-0">
+            <thead>
+              <tr>
+                <th>Firma Adı</th>
+                <th>Vergi No</th>
+                <th>İletişim</th>
+                <th>Performans</th>
+                <th>Durum</th>
+                <th class="text-end">İşlemler</th>
+              </tr>
+            </thead>
+            <tbody id="tedarikciTableBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       MODALLER
+  ═══════════════════════════════════════════════════════════ -->
+
+  <!-- Yeni Ürün -->
+  <div class="modal-backdrop-custom d-none" id="modalYeniUrun">
+    <div class="modal-box">
+      <div class="modal-box-header">
+        <h5>Yeni Ürün Ekle</h5>
+        <button class="modal-close" onclick="closeModal('modalYeniUrun')">&times;</button>
+      </div>
+      <div class="modal-box-body">
+        <div class="mb-3">
+          <label class="form-label">Ürün Adı</label>
+          <input type="text" id="newProductName" class="form-control" placeholder="Ürün adı" />
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Kategori</label>
+          <select id="newProductCategory" class="form-select">
+            <option value="Yağ">Yağ</option>
+            <option value="Et">Et</option>
+            <option value="Un & Tahıl">Un & Tahıl</option>
+            <option value="Süt Ürünleri">Süt Ürünleri</option>
+            <option value="Sebze">Sebze</option>
+            <option value="İçecek">İçecek</option>
+          </select>
+        </div>
+        <div class="row g-2 mb-3">
+          <div class="col-8">
+            <label class="form-label">Başlangıç Miktarı</label>
+            <input type="number" id="newProductQty" class="form-control" placeholder="0" min="0" />
+          </div>
+          <div class="col-4">
+            <label class="form-label">Birim</label>
+            <select id="newProductUnit" class="form-select">
+              <option>kg</option><option>litre</option><option>adet</option><option>kutu</option>
+            </select>
+          </div>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Min. Eşik</label>
+          <input type="number" id="newProductMin" class="form-control" placeholder="0" min="0" />
+        </div>
+        <div class="mb-3 cost-col">
+          <label class="form-label">Birim Fiyat (TL)</label>
+          <input type="number" id="newProductPrice" class="form-control" placeholder="0.00" min="0" step="0.01" />
+        </div>
+        <div class="mb-3">
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="newProductPerishable" onchange="toggleExpiryField()" />
+            <label class="form-check-label">Bozulabilir ürün (SKT zorunlu)</label>
+          </div>
+        </div>
+        <div class="mb-3 d-none" id="expiryFieldWrap">
+          <label class="form-label">Son Kullanma Tarihi <span class="text-danger">*</span></label>
+          <input type="date" id="newProductExpiry" class="form-control" />
+        </div>
+      </div>
+      <div class="modal-box-footer">
+        <button class="btn btn-primary" onclick="saveNewProduct()">Ürün Ekle</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Yeni Satın Alma Talebi -->
+  <div class="modal-backdrop-custom d-none" id="modalYeniTalep">
+    <div class="modal-box">
+      <div class="modal-box-header">
+        <h5>Yeni Satın Alma Talebi</h5>
+        <button class="modal-close" onclick="closeModal('modalYeniTalep')">&times;</button>
+      </div>
+      <div class="modal-box-body">
+        <div class="mb-3">
+          <label class="form-label">Ürün</label>
+          <select id="talepUrun" class="form-select" onchange="updateTalepUnit()">
+          </select>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Talep Edilen Miktar</label>
+          <div class="input-group">
+            <input type="number" id="talepMiktar" class="form-control" placeholder="0" min="0.01" step="0.01" />
+            <span class="input-group-text" id="talepUnitLabel">adet</span>
+          </div>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Talep Nedeni</label>
+          <textarea id="talepNeden" class="form-control" rows="3" placeholder="Talep nedeninizi açıklayın"></textarea>
+        </div>
+      </div>
+      <div class="modal-box-footer">
+        <button class="btn btn-primary" onclick="saveTalep()">Talep Oluştur</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Yeni Sipariş -->
+  <div class="modal-backdrop-custom d-none" id="modalYeniSiparis">
+    <div class="modal-box">
+      <div class="modal-box-header">
+        <h5>Yeni Sipariş Oluştur</h5>
+        <button class="modal-close" onclick="closeModal('modalYeniSiparis')">&times;</button>
+      </div>
+      <div class="modal-box-body">
+        <div class="mb-3">
+          <label class="form-label">Onaylanmış Talep</label>
+          <select id="siparisRequestSelect" class="form-select" onchange="updateSiparisPreview()">
+            <option value="">Talep seçiniz</option>
+          </select>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Tedarikçi</label>
+          <select id="siparisTedarikci" class="form-select">
+            <option value="">Tedarikçi seçiniz</option>
+          </select>
+        </div>
+        <div id="siparisPreview" class="siparis-preview d-none">
+          <p class="mb-1"><strong>Ürün:</strong> <span id="previewUrun">-</span></p>
+          <p class="mb-0"><strong>Miktar:</strong> <span id="previewMiktar">-</span></p>
+        </div>
+      </div>
+      <div class="modal-box-footer">
+        <button class="btn btn-primary" onclick="saveSiparis()">Sipariş Oluştur</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Yeni Tedarikçi -->
+  <div class="modal-backdrop-custom d-none" id="modalYeniTedarikci">
+    <div class="modal-box">
+      <div class="modal-box-header">
+        <h5>Yeni Tedarikçi Ekle</h5>
+        <button class="modal-close" onclick="closeModal('modalYeniTedarikci')">&times;</button>
+      </div>
+      <div class="modal-box-body">
+        <div class="mb-3">
+          <label class="form-label">Firma Adı</label>
+          <input type="text" id="newSupplierName" class="form-control" />
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Vergi No</label>
+          <input type="text" id="newSupplierTax" class="form-control" />
+        </div>
+        <div class="mb-3">
+          <label class="form-label">İletişim Kişisi</label>
+          <input type="text" id="newSupplierContact" class="form-control" />
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Telefon</label>
+          <input type="text" id="newSupplierPhone" class="form-control" />
+        </div>
+        <div class="mb-3">
+          <label class="form-label">E-posta</label>
+          <input type="email" id="newSupplierEmail" class="form-control" />
+        </div>
+      </div>
+      <div class="modal-box-footer">
+        <button class="btn btn-primary" onclick="saveTedarikci()">Tedarikçi Ekle</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Teslim Alma Modalı -->
+  <div class="modal-backdrop-custom d-none" id="modalTeslim">
+    <div class="modal-box">
+      <div class="modal-box-header">
+        <h5>Teslimat Al</h5>
+        <button class="modal-close" onclick="closeModal('modalTeslim')">&times;</button>
+      </div>
+      <div class="modal-box-body" id="teslimModalBody">
+        <!-- Dinamik içerik -->
+      </div>
+      <div class="modal-box-footer">
+        <button class="btn btn-secondary me-2" onclick="closeModal('modalTeslim')">İptal</button>
+        <button class="btn btn-primary" onclick="confirmTeslim()">Teslimatı Onayla</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast bildirimi -->
+  <div id="toastContainer" class="toast-container position-fixed bottom-0 end-0 p-3"></div>
+
+  <script src="lib/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

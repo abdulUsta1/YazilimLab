@@ -1,0 +1,25 @@
+{
+  "name": "restoran-tedarik-backend",
+  "version": "1.0.0",
+  "description": "Restoran Tedarik ve Stok Yönetimi - Backend API",
+  "main": "src/app.js",
+  "scripts": {
+    "start": "node --experimental-sqlite src/app.js",
+    "dev": "nodemon --exec \"node --experimental-sqlite\" src/app.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "bootstrap": "^5.3.8",
+    "bootstrap-icons": "^1.13.1",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "express-rate-limit": "^7.3.1",
+    "express-validator": "^7.1.0",
+    "helmet": "^7.1.0",
+    "jsonwebtoken": "^9.0.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.3"
+  }
+}
